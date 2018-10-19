@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+	<script src="/static/assets/js/jquery-2.0.3.min.js"
+		th:src="@{/assets/js/jquery-2.0.3.min.js}"></script>
+	<script type="text/javascript" th:src="@{/layui/layui.all.js}"></script>
+	<script type="text/javascript">
+		$(function() {
+
+			$("#id1").click(function() {
+				//多窗口模式，层叠置顶
+				layer.open({
+					type : 2, //此处以iframe举例
+					title : '当你选择该窗体时，即会在最顶端',
+					area : [ '90%', '90%' ],
+					shade : 0,
+					maxmin : true,
+					content : 'settop.html',
+					btn : [ '继续弹出', '全部关闭' ], //只是为了演示
+					yes : function() {
+						$("#id1").click(); //此处只是为了演示，实际使用可以剔除
+					},
+					btn2 : function() {
+						layer.closeAll();
+					},
+					zIndex : layer.zIndex, //重点1
+					success : function(layero) {
+						layer.setTop(layero); //重点2
+					}
+				});
+			});
+
+		});
+	</script>
+
+	<div class="clear box layer-main">
+		<button id="id1" href="javascript:;" class="layui-btn">多窗口模式，层叠置顶</button>
+	</div>
+
+</body>
+</html>

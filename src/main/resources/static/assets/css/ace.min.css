@@ -6612,7 +6612,6 @@ input[type=checkbox].ace.ace-switch.ace-switch-7:checked+.lbl::after {
     border-top: 2px solid #4c8fbd;
     border-bottom-color: transparent;
     background-color: #FFF;
-    z-index: 12;
     line-height: 16px;
     margin-top: -1px;
     box-shadow: 0 -2px 3px 0 rgba(0,0,0,0.15)

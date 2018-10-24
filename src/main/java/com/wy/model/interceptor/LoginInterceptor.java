@@ -19,7 +19,14 @@ public class LoginInterceptor extends HandlerInterceptorAdapter {
 		}
 		User user = (User) request.getSession().getAttribute(SysConstants.USER_SESSION_KEY);
 		if (user == null) {
-			response.sendRedirect("/");
+			response.setContentType("text/html");
+			
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().print("<link rel='stylesheet' href='/assets/layer/theme/default/layer.css'>"
+					+ "<script src='/assets/js/jquery-2.0.3.min.js'></script>"
+					+ "<script src='/assets/layer/layer.js'></script>"
+					+ "<script src='/plugin/common.js'></script>"
+					+ "<script>$(function(){alert2('当前会话失效，请重新登录！',function(){top.location.href='/';});});</script>");;
 			return false;
 		}
 		return true;

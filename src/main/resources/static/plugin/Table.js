@@ -1,30 +1,47 @@
 ;
 (function(window, $) {
 	
-	var options = {
-		pageId: null,
-		service:"",
-		condition: [],
-		hiddenfield: [],
-		async: false,
-		onRowClick: null,
-		onTableDataBind: null,
-		pagable: true,
-		currentPage: 1,
-		pageSize: 10
-	};
-	
-	var time = new Date();
-	var m = time.getMonth() + 1;   
-	var t = time.getFullYear() + "" + m     
-	+ time.getDate() + "" + time.getHours()    
-	+ time.getMinutes() + time.getSeconds() + time.getMilliseconds(); 
-	options.id = t;
+	var tables = {};
 	
 	$.fn.extend({
 		table: function(){
-			options.pager = this;
 			var _this = this;
+			
+			for(var table in tables){
+				if($("[table_id="+table+"]").length <= 0){
+					delete tables[table];
+				}
+			}
+			
+			var table_id = $(this).attr("table_id");
+			if(table_id){
+				requestAndRender(_this);
+				return;
+			}
+			
+			var time = new Date();
+			var m = time.getMonth() + 1;   
+			var t = time.getFullYear() + "" + m     
+			+ time.getDate() + "" + time.getHours()    
+			+ time.getMinutes() + time.getSeconds() + time.getMilliseconds(); 
+			var options = {
+				id: 'table_' + t, // id
+				service:"", // 请求地址
+				condition: [],// 请求参数
+				hiddenfield: [],// 隐藏字段
+				async: false, // 是否异步请求
+				onRowClick: null, // 行点击事件
+				onTableDataBind: null, // 表格数据渲染完成事件
+				pagable: true, // 是否分页
+				pageId: null, // 分页栏所在位置
+				currentPage: 1, // 当前页
+				pageSize: 10 // 页面大小
+			};
+			tables['table_' + t] = options;
+			
+			options.pager = this;
+			
+			$(this).attr("table_id",options.id);
 			// 请求地址
 			var service = $(this).attr("service");
 			// 查询条件
@@ -93,6 +110,10 @@
 		 * 请求参数
 		 */
 		var param = {};
+		var table_id = $(_this).attr("table_id");
+		var options = tables[table_id];
+		$(_this).find("tbody").empty();
+		$("#"+options.pageId).empty();
 		if(options.condition && options.condition.length > 0){
 			for(var i=0; i<options.condition.length; i++){
 				param[options.condition[i]] = $("#" + options.condition[i]).val();
@@ -110,14 +131,11 @@
 			async: options.async,
 			type: "post",
 			success: function(response){
-				$(_this).find("tbody").empty();
 				var tdCount =  $(_this).find("thead th").length;
 				var ack_code = response.ack_code;
 				var msg = response.message;
 				if(ack_code <= 0){
-					layer.alert(msg,{
-						icon: 3
-					});
+					alert2(msg);
 					$(_this).find("tbody").append("<tr><td colspan='"+tdCount+"' align='center'>没有符合条件的数据！</td></tr>");
 					return;
 				}
@@ -140,20 +158,27 @@
 				
 				var content = "";
 				
+				// 显示单选按钮
+				var radioShowHandle = false;
+				var radioIndex = -1;
+				
+				var opreationTh = false;
+				var opreationThIndex = -1;
+				
 				// 渲染列表行
 				for(var i=0; i<row_data.length; i++){
-					var tr = "";
+					var tr = "<tr ";
 					var td = "";
 					var row = row_data[i];
 					
 					if(options.hiddenfield.length > 0){
 						for(var h=0; h<options.hiddenfield.length; h++){
-							tr += "<tr "+options.hiddenfield[h]+"='"+row[options.hiddenfield[h]]+"' ";
+							tr += options.hiddenfield[h]+"='"+row[options.hiddenfield[h]]+"' ";
 						}
 					}else{
 						tr += "<tr ";
 					}
-					$(_this).find("thead th").each(function(){
+					$(_this).find("thead th").each(function(index,item){
 						var field = $(this).attr("field");
 						if(field){
 							tr += field+"='" + row[field] + "' ";
@@ -161,9 +186,6 @@
 						}else{
 							var checkbox = $(this).find(":checkbox");
 							var radio = $(this).find(":radio");
-							if(radio && (i==row_data.length-1)){
-								radio.parent().hide();
-							}
 							if(checkbox.length == 1){
 								var th = checkbox.parents("th");
 								var calss = th.attr("class");
@@ -172,6 +194,10 @@
 								var th = radio.parents("th");
 								var calss = th.attr("class");
 								td += "<td class='"+calss+"'>" + th.html() + "</td>";
+								if(radio && (i==row_data.length-1)){
+									radioShowHandle = true;
+									radioIndex = index;
+								}
 							}else if($(this).is("[operation]")){
 								var operation = $(this).find("div[operation]");
 								var calss = $(this).attr("class");
@@ -180,6 +206,8 @@
 								}else{
 									td += "<td></td>";
 								}
+								opreationTh = true;
+								opreationThIndex = index;
 							}else{
 								td += "<td></td>";
 							}
@@ -191,11 +219,53 @@
 				
 				$(_this).find("tbody").append(content);
 				
+				/*
+				 * 分页栏
+				 */
 				if(options.pagable){
-					writePage(options.pageId,options.page_count,options.row_count,options.currentPage,options.pageSize);
+					writePage(options.id,options.pageId,options.page_count,options.row_count,options.currentPage,options.pageSize);
 				}
 				
-				if(options.onTableDataBind && window.dataBind && typeof (eval(options.onTableDataBind)) === "function"){
+				if(opreationTh){
+					$(_this).find("tbody tr").each(function(){
+						var tr = this;
+						$(this).find("td").eq(opreationThIndex).find("button").each(function(){
+							var operation = $(this).attr("operation");
+							if(operation && typeof (eval(operation)) === "function"){
+								$(this).click(function(){
+									eval(operation)(tr);
+								});
+							}
+						});
+					});
+				}
+				 
+				
+				/*
+				 * 行点击事件绑定
+				 */
+				if(options.onRowClick && typeof (eval(options.onRowClick)) === "function"){
+					$(_this).find("tbody tr").each(function(){
+						$(this).click(function(){
+							eval(options.onRowClick)(this);
+						});
+					});
+				}
+				
+				/*
+				 * 显示单选按钮 
+				 */
+				if(radioShowHandle){
+					$(_this).find("th").eq(radioIndex).find(":radio").parent().hide();
+					$(_this).find("tbody tr").each(function(){
+						$(this).find("td").eq(radioIndex).find(":radio").parent().show();
+					});
+				}
+				
+				/*
+				 * 触发列表渲染事件
+				 */
+				if(options.onTableDataBind && typeof (eval(options.onTableDataBind)) === "function"){
 					eval(options.onTableDataBind)(_this);
 				}
 				
@@ -215,7 +285,8 @@
 	 * @param pageSize
 	 * @returns
 	 */
-	function writePage(pageId,page_count,row_count,currentPage,pageSize){
+	function writePage(table_id,pageId,page_count,row_count,currentPage,pageSize){
+		var options = tables[table_id];
 		var pager = `<div page_id="`+options.id+`" class="ui-jqgrid-pager ui-state-default ui-corner-bottom" style="text-aligin: center;margin-bottom:20px;">
 				<div class="ui-pager-control" role="group">
 					<table class="ui-pg-table ui-common-table ui-pager-table" style="width: 100%;">
@@ -242,13 +313,21 @@
 				</div>
 			</div>`;
 		$("#" + pageId).html(pager);
-		pageEventBind();
+		pageEventBind(table_id);
 	}
 	
+	/**
+	 * 转换空内容为 --
+	 * 
+	 * @param td
+	 * @param row
+	 * @param field
+	 * @returns
+	 */
 	function getTdContent(td,row,field){
 		var onViewBind = $(td).attr("onViewBind");
 		var value;
-		if(onViewBind && window.dataBind && typeof (eval(onViewBind)) === "function"){
+		if(onViewBind && typeof (eval(onViewBind)) === "function"){
 			value = eval(onViewBind)(row[field]);
 			return "<td>"+(value?value:"--")+"</td>";
 		}else{
@@ -262,7 +341,8 @@
 	 * 
 	 * @returns
 	 */
-	function pageEventBind(){
+	function pageEventBind(table_id){
+		var options = tables[table_id];
 		var page = $("[page_id="+options.id+"]");
 		var pager = options.pager;
 				 

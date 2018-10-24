@@ -14,12 +14,12 @@ var addTabs = function (obj) {
         title = '<li role="presentation" id="tab_' + id + '" style="margin-right: 4px;"><a href="#' + id + '" aria-controls="' + id + '" role="tab" data-toggle="tab">' + obj.title+'&nbsp;</a>';
         //是否允许关闭
         if (obj.close) {
-            title += ' <i class="close-tab icon-remove"></i>';
+            title += ' <i class="close-tab icon-remove" style="margin-right:5px;"></i>';
         }
         title += '</li>';
         //是否指定TAB内容
 //        if (obj.content) {
-            content = '<div role="tabpanel" class="tab-pane" id="' + id + '" style="height:100%;width:100%;border:none;">' + obj.content + '</div>';
+            content = '<div role="tabpanel" class="tab-pane" id="' + id + '" style="height:100%;width:100%;border:none;"></div>';
 //        } else {//没有内容，使用IFRAME打开链接
 //            content = '<div role="tabpanel" class="tab-pane" id="' + id + '"><iframe id="iframe_'+id+'"  class="mainFrame" src="' + obj.url + '" scrolling="no" frameborder="0" width="100%" height="'+mainHeight+'" style="border: 0;"></iframe></div>';
 //        }

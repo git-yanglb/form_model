@@ -14,8 +14,8 @@ and open the template in the editor.
     right: 10px;
     top: 11px;
     padding-left: 25px;
-    z-index: 100;
     cursor: hand;
+    z-index: 11;
     cursor: pointer;
     color: #94A6B0;
 }

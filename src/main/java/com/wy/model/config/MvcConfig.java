@@ -52,7 +52,7 @@ public class MvcConfig implements WebMvcConfigurer {
 		registry.addInterceptor(new TimerInterceptor()).addPathPatterns("/**");
 		// 登录拦截器
 		registry.addInterceptor(new LoginInterceptor()).addPathPatterns("/**")
-			.excludePathPatterns("/","/login","/error","/assets/**","/test/**","/js/**");
+			.excludePathPatterns("/","/login","/error","/assets/**","/test/**","/js/**","/plugin/**");
 	}
 
 }

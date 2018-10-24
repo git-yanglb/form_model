@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
 
 <!-- 
-	右键 -> Run as -> Maven Generator-sources 未生成文件
+	右键 -> Run as -> Maven Generator-sources 执行后未生成文件按如下进行操作
 	命令行进入项目根目录执行(先配置好maven环境变量)：
 		mvn mybatis-generator:generate  -e
  -->
@@ -47,7 +47,7 @@
 		</javaClientGenerator>
 		
 		<!-- 要生成的表 tableName是数据库中的表名或视图名 domainObjectName是实体类名 -->
-		<table tableName="menu" domainObjectName="Menu" enableCountByExample="false" enableUpdateByExample="false"
+		<table tableName="tdb_tables" domainObjectName="Form" enableCountByExample="false" enableUpdateByExample="false"
 			enableDeleteByExample="false" enableSelectByExample="false" selectByExampleQueryId="false">
 		</table>
 			

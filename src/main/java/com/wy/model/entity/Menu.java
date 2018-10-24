@@ -19,6 +19,8 @@ public class Menu {
 
 	private Integer orderNum;
 
+	private Menu parent;
+
 	public Integer getMenuId() {
 		return menuId;
 	}
@@ -82,4 +84,20 @@ public class Menu {
 	public void setOrderNum(Integer orderNum) {
 		this.orderNum = orderNum;
 	}
+
+	public Menu getParent() {
+		return parent;
+	}
+
+	public void setParent(Menu parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public String toString() {
+		return "Menu [menuId=" + menuId + ", menuName=" + menuName + ", menuIcon=" + menuIcon + ", menuUrl=" + menuUrl
+				+ ", upMenuId=" + upMenuId + ", isUse=" + isUse + ", createTime=" + createTime + ", orderNum="
+				+ orderNum + "]";
+	}
+
 }

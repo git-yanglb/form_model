@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.wy.model.mapper.MenuMapper">
-	<resultMap id="BaseResultMap" type="com.wy.model.entity.Menu">
+
+	<resultMap id="BaseResultMap" type="menu">
 		<id column="menu_id" jdbcType="INTEGER" property="menuId" />
 		<result column="menu_name" jdbcType="VARCHAR" property="menuName" />
 		<result column="menu_icon" jdbcType="VARCHAR" property="menuIcon" />
@@ -11,24 +12,56 @@
 		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
 		<result column="order_num" jdbcType="INTEGER" property="orderNum" />
 	</resultMap>
+
+	<resultMap id="menuWitParent" type="menu">
+		<id column="menu_id" jdbcType="INTEGER" property="menuId" />
+		<result column="menu_name" jdbcType="VARCHAR" property="menuName" />
+		<result column="menu_icon" jdbcType="VARCHAR" property="menuIcon" />
+		<result column="menu_url" jdbcType="VARCHAR" property="menuUrl" />
+		<result column="is_use" jdbcType="INTEGER" property="isUse" />
+		<result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+		<result column="order_num" jdbcType="INTEGER" property="orderNum" />
+		<association property="parent" column="up_menu_id" javaType="menu">
+			<id column="up_menu_id" jdbcType="INTEGER" property="menuId" />
+			<result column="up_menu_name" jdbcType="VARCHAR" property="menuName" />
+			<result column="up_menu_icon" jdbcType="VARCHAR" property="menuIcon" />
+			<result column="up_menu_url" jdbcType="VARCHAR" property="menuUrl" />
+			<result column="up_up_menu_id" jdbcType="INTEGER" property="upMenuId" />
+			<result column="up_is_use" jdbcType="INTEGER" property="isUse" />
+			<result column="up_create_time" jdbcType="TIMESTAMP" property="createTime" />
+			<result column="up_order_num" jdbcType="INTEGER" property="orderNum" />
+		</association>
+	</resultMap>
+
 	<sql id="Base_Column_List">
-		menu_id menuId, menu_name menuName, menu_icon menuIcon,
-		menu_url menuUrl,
-		up_menu_id upMenuId, is_use isUse, create_time
-		createTime, order_num
-		orderNum
+		menu_id, menu_name, menu_icon,
+		menu_url, up_menu_id, is_use ,
+		create_time , order_num
 	</sql>
+
+	<sql id="columnWithParent">
+		s.menu_id, s.menu_name, s.menu_icon,
+		s.menu_url, s.up_menu_id, s.is_use ,
+		s.create_time , s.order_num,
+		p.menu_name up_menu_name,p.menu_icon up_menu_icon,
+		p.menu_url up_menu_url,p.up_menu_id up_up_menu_id,p.is_use up_is_use ,
+		p.create_time up_create_time ,p.order_num up_order_num
+	</sql>
+
 	<select id="selectByPrimaryKey" parameterType="java.lang.Integer"
-		resultMap="BaseResultMap">
+		resultMap="menuWitParent">
 		select
-		<include refid="Base_Column_List" />
-		from menu
-		where menu_id = #{menuId,jdbcType=INTEGER}
+		<include refid="columnWithParent" />
+		from menu s left join menu p on s.up_menu_id = p.menu_id
+		where s.menu_id =
+		#{_parameter,jdbcType=INTEGER}
 	</select>
+
 	<delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
 		delete from menu
 		where menu_id = #{menuId,jdbcType=INTEGER}
 	</delete>
+	
 	<insert id="insert" parameterType="com.wy.model.entity.Menu">
 		insert into menu (menu_id,
 		menu_name, menu_icon,
@@ -43,6 +76,7 @@
 		#{createTime,jdbcType=TIMESTAMP},
 		#{orderNum,jdbcType=INTEGER})
 	</insert>
+	
 	<insert id="insertSelective" parameterType="com.wy.model.entity.Menu">
 		insert into menu
 		<trim prefix="(" suffix=")" suffixOverrides=",">
@@ -98,7 +132,8 @@
 			</if>
 		</trim>
 	</insert>
-	<update id="updateByPrimaryKeySelective" parameterType="com.wy.model.entity.Menu">
+	
+	<update id="updateByPrimaryKeySelective" parameterType="menu">
 		update menu
 		<set>
 			<if test="menuName != null">
@@ -125,6 +160,7 @@
 		</set>
 		where menu_id = #{menuId,jdbcType=INTEGER}
 	</update>
+	
 	<update id="updateByPrimaryKey" parameterType="com.wy.model.entity.Menu">
 		update menu
 		set
@@ -142,13 +178,13 @@
 		where menu_id = #{menuId,jdbcType=INTEGER}
 	</update>
 
-	<select id="getMenuList" resultType="menu">
+	<select id="getMenuList" resultMap="BaseResultMap">
 		select
 		<include refid="Base_Column_List"></include>
-		from menu
+		from menu where is_use = 1
 	</select>
 
-	<select id="getMenuPage" resultType="menu">
+	<select id="getMenuPage" resultMap="BaseResultMap">
 		<bind name="menuName" value=" '%' + _parameter + '%' " />
 		select
 		<include refid="Base_Column_List"></include>
@@ -156,7 +192,7 @@
 		<if test=" _parameter != null and _parameter != '' ">
 			and menu_name like #{menuName}
 		</if>
-		order by createTime desc
+		order by create_time desc
 	</select>
 
 </mapper>

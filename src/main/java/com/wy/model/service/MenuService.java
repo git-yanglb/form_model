@@ -11,4 +11,12 @@ public interface MenuService {
 
 	public Page<Menu> getMenuPage(int currentPage, int pageSize,String menuName);
 
+	public Menu getMenuInfo(int id);
+
+	public void updateMenu(Menu menu);
+
+	public void saveMenu(Menu menu);
+
+	public void deleteMenu(int id);
+
 }

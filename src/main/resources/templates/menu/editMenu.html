@@ -1,0 +1,100 @@
+
+<div class="col-sm-12">
+	<div class="widget-box">
+		<div class="widget-body" style="border: 1px solid #CCC;">
+			<div class="widget-main">
+				<form id="menuform" class="form-search">
+					<table style="width: 100%;">
+						<tr>
+							<td style="width: 15%; text-align: right;"><font color="red">*</font>菜单名称：</td>
+							<td colspan="3">
+								<input class="form-control input-mask-phone" type="text" name="menuName" notnull="true" desc="菜单名称" th:value="${menuInfo.menuName} ? ${menuInfo.menuName} : ''">
+							</td>
+						</tr>
+						<tr>
+							<td colspan="4"><div class="hr"></div></td>
+						</tr>
+						<tr>
+							<td style="width: 15%; text-align: right;">菜单图标：</td>
+							<td colspan="3"><input class="form-control input-mask-phone"
+								type="text" name="menuIcon" th:value="${menuInfo.menuIcon}?${menuInfo.menuIcon}:''"></td>
+						</tr>
+						<tr>
+							<td colspan="4"><div class="hr"></div></td>
+						</tr>
+						<tr>
+							<td style="width: 15%; text-align: right;">菜单路径：</td>
+							<td colspan="3"><input class="form-control input-mask-phone"
+								type="text" name="menuUrl" th:value="${menuInfo.menuUrl}?${menuInfo.menuUrl}:''"></td>
+						</tr>
+						<tr>
+							<td colspan="4"><div class="hr"></div></td>
+						</tr>
+						<tr>
+							<td style="width: 15%; text-align: right;">排序号：</td>
+							<td colspan="3"><input class="form-control input-mask-phone"
+								type="text" name="orderNum" th:value="${menuInfo.orderNum}?${menuInfo.orderNum}:''"></td>
+						</tr>
+						<tr>
+							<td colspan="4"><div class="hr"></div></td>
+						</tr>
+						<tr>
+							<td style="width: 15%; text-align: right;">父菜单：</td>
+							<td>
+								<input class="form-control input-mask-phone" id="upMenuName" type="text" readonly th:value="${menuInfo.parent}?(${menuInfo.parent.menuName}?${menuInfo.parent.menuName}:''):''">
+								<input type="hidden" name="upMenuId" th:value="${menuInfo.parent} ? (${menuInfo.parent.menuId} ? ${menuInfo.parent.menuId} : '') : ''">
+							</td>
+							<td style="width: 15%; text-align: right;">菜单状态：</td>
+							<td style="width: 35%;">
+								<div>
+									<label> <input name="isUse" type="radio" th:field="*{menuInfo.isUse}"
+										class="ace" value="1" selected> <span class="lbl"
+										style="margin-left: 5px;">启用</span> <label
+										style="margin-left: 15px;"> <input th:field="*{menuInfo.isUse}"
+											name="isUse" type="radio" class="ace" value="0"> <span
+											class="lbl" style="margin-left: 5px;">禁用</span>
+									</label>
+								</div>
+							</td>
+						</tr>
+					</table>
+					<input type="hidden" name="menuId" th:value="${menuInfo.menuId}?${menuInfo.menuId}:''">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(function(){
+		
+		$("#upMenuName").click(function(){
+			var id = $("[name=menuId]").val();
+			layer.open({
+				type : 1,
+				title : '<h5 class="widget-title lighter"><i class="ace-icon glyphicon glyphicon-book"></i>选择父菜单</h5>',
+				shadeClose : false,
+				btn: ["确定","取消"],
+				area : [ '900px', '520px' ],
+				content : "",
+				success: function(layero,index){
+					$(layero).find(".layui-layer-content").ajax("/menu/edit/"+id+"/parent");
+				},
+				yes: function(index, layero){
+					var checked = layero.find("#menuTable tbody tr :radio:checked");
+					if(checked.length == 1){
+						var tr = checked.parents("tr");
+						var menuid = tr.attr("menuid");
+						var menuname = tr.attr("menuname");
+						$("#upMenuName").val(menuname);
+						$(":hidden[name=upMenuId]").val(menuid);
+					}else{
+						$("#upMenuName").val("");
+						$(":hidden[name=upMenuId]").val("-1");
+					}
+					layer.close(index);
+				}
+			});
+		});
+		
+	});
+</script>

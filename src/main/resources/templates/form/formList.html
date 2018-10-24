@@ -1,0 +1,154 @@
+<div>
+	<div class="col-xs-12">
+		<div class="form-group" style="line-height:30px;">
+			<label class="col-sm-1 control-label no-padding-right">表单名称：</label>
+			<div class="col-xs-12 col-sm-3">
+				<span class="block input-icon input-icon-right"> 
+				<input type="text" id="formName" class="width-80" style="height:34px;">
+			</div>
+			<div>
+				<button id="searchBtn" class="btn btn-white btn-info" style="width:80px;margin-right:6px;">
+					<i class="ace-icon fa fa-floppy-o bigger-120 blue" style="margin-right:5px;"></i>搜索
+				</button>
+				<button id="resetBtn" class="btn btn-white btn-warning btn-bold" style="width:80px;margin-right:6px;">
+					<i class="ace-icon fa fa-trash-o bigger-120 orange" style="margin-right:5px;"></i>重置
+				</button>
+				<button id="addBtn" class="btn btn-white btn-success btn-bold" style="width:80px;">
+					<i class="icon-plus-sign bigger-120 orange" style="margin-right:5px;"></i>添加
+				</button>
+ 			</div>
+			<div style="clear:both;"></div>
+		</div>
+		<table id="simple-table" class="table table-bordered table-hover" 
+			service="/form/list" condition="formName" hiddenfield="" pagable="true"
+			pageId="grid-pager" currentPage="1" pageSize="6" model="detail"
+			onTableDataBind="" onRowClick="">
+			<thead>
+				<tr>
+					<th width="60" class="center">
+						<label class="pos-rel"> 
+							<input type="radio" class="ace"><span class="lbl"></span>
+						</label>
+					</th>
+					<th field="menuName" class="detail-col">表单中文名</th>
+					<th field="menuIcon">表单英文名</th>
+					<th field="menuUrl">描述</th>
+					<th field="createTime">
+						<i class="ace-icon fa fa-clock-o bigger-110 hidden-480" style="margin-right: 5px;"></i>创建时间
+					</th>
+					<th field="isUse" onViewBind="setStatus">状态</th>
+					<th operation width="120" class="center">
+						操作
+						<div operation style="display:none;">
+							<button class="btn btn-xs btn-info" operation="editMenu" title="编辑">
+								<i class="ace-icon fa fa-pencil bigger-120"></i>
+							</button>
+	
+							<button class="btn btn-xs btn-danger" operation="deleteMenu" title="删除">
+								<i class="ace-icon fa fa-trash-o bigger-120"></i>
+							</button>
+						</div>
+					</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+		<div id="grid-pager"></div>
+	</div>
+</div>
+<script>
+
+	$(function() {
+		$("#simple-table").table();
+		
+		$("#searchBtn").click(function(){
+			$("#simple-table").table();
+		});
+		
+		$("#resetBtn").click(function(){
+			$(".form-group :text").val("");
+			$("#simple-table").table();
+		});
+		
+		$("#addBtn").click(function(){
+			layer.open({
+				type : 1,
+				title : '<h5 class="widget-title lighter"><i class="ace-icon glyphicon glyphicon-book"></i>添加菜单</h5>',
+				shadeClose : false,
+				btn: ["确定","取消"],
+				area : [ '700px', '415px' ],
+				content : "",
+				success: function(layero,index){
+					$(layero).find(".layui-layer-content").ajax("/menu/edit/-1");
+				},
+				yes: function(index, layero){
+					if($("#menuform").validate()){
+						var post = new Post("/menu/updates/-1");
+						post.setRangeParam("#menuform");
+						post.doPost();
+						if(post.getCode() >= 0){
+							alert2("操作成功！");
+							$("#simple-table").table();
+							layer.close(index);
+						}else{
+							post.showErr();
+						}
+					}
+				}
+			});
+		});
+		
+	});
+	
+	function editMenu(tr){
+		var id = $(tr).attr("menuid");
+		layer.open({
+			type : 1,
+			title : '<h5 class="widget-title lighter"><i class="ace-icon glyphicon glyphicon-book"></i>菜单编辑</h5>',
+			shadeClose : false,
+			btn: ["确定","取消"],
+			area : [ '700px', '415px' ],
+			content : "",
+			success: function(layero,index){
+				$(layero).find(".layui-layer-content").ajax("/menu/edit/"+id);
+			},
+			yes: function(index, layero){
+				if($("#menuform").validate()){
+					var post = new Post("/menu/updates/"+id);
+					post.setRangeParam("#menuform");
+					post.doPost();
+					if(post.getCode() >= 0){
+						alert2("操作成功！");
+						$("#resetBtn").click();
+						layer.close(index);
+					}else{
+						post.showErr();
+					}
+				}
+			}
+		});
+	}
+	
+	function deleteMenu(tr){
+		confirm2("确定删除吗？",function(index){
+			var menuId = $(tr).attr("menuid");
+			var post = new Post("/menu/delete/"+menuId);
+			post.doPost();
+			if(post.getCode() >= 0){
+				alert2("操作成功！");
+				$("#resetBtn").click();
+				layer.close(index);
+			}else{
+				post.showErr();
+			}
+		});
+	}
+
+	function setStatus(status) {
+		if (status == 1) {
+			return "<font style='color:green'>启用</font>";
+		} else {
+			return "<font style='color:red'>禁用</font>";
+		}
+	}
+</script>

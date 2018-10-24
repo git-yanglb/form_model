@@ -1,0 +1,66 @@
+<div class="col-xs-12" style="margin-top:20px;">
+	<div class="form-group" style="line-height: 30px;">
+		<table>
+			<tr>
+				<td><span style="margin-left:20px;">菜单名称：</span></td>
+				<td>
+					<input type="text" id="menuName_" class="width-120" style="height: 34px;">
+				</td>
+				<td>
+					<div style="margin-left:20px;">
+						<button id="searchBtn" class="btn btn-white btn-info" style="width: 80px; margin-right: 6px;">
+							<i class="ace-icon fa fa-floppy-o bigger-120 blue" style="margin-right: 5px;"></i>搜索
+						</button>
+						<button id="resetBtn" class="btn btn-white btn-warning btn-bold" style="width: 80px;">
+							<i class="ace-icon fa fa-trash-o bigger-120 orange" style="margin-right: 5px;"></i>重置
+						</button>
+					</div>
+				</td>
+			</tr>
+		</table>
+	</div>
+	<table id="menuTable" class="table table-bordered table-hover"
+		service="/menu/list" condition="menuName_"
+		hiddenfield="menuId,upMenuId" pagable="true" pageId="menuTablePager"
+		currentPage="1" pageSize="6" model="detail" onTableDataBind="selectRow"
+		onRowClick="">
+		<thead>
+			<tr>
+				<th width="60" class="center">
+					<label class="pos-rel"> 
+						<input type="radio" name="pm" class="ace"><span class="lbl"></span>
+					</label>
+				</th>
+				<th field="menuName" class="detail-col">菜单名称</th>
+				<th field="menuUrl">菜单路径</th>
+				<th field="createTime">创建时间</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+	<div id="menuTablePager"></div>
+</div>
+
+<script>
+
+	$(function(){
+		$("#menuTable").table();
+		
+		$("#menuTable").prev("div").find("#searchBtn").click(function(){
+			$("#menuTable").table();
+		});
+		
+		$("#menuTable").prev("div").find("#resetBtn").click(function(){
+			$("#menuTable").prev("div").find(":text").val("");
+			$("#menuTable").table();
+		});
+		
+	});
+	
+	function selectRow(){
+		$("#menuTable tbody tr").click(function(){
+			$(this).find(":radio").prop("checked",true);
+		});
+	}
+
+</script>

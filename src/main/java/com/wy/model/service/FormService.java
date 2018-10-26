@@ -7,4 +7,6 @@ public interface FormService {
 
 	public Page<Form> getFormList(String formName, int currentPage, int pageSize);
 
+	public Form getFormInfo(Integer id);
+
 }

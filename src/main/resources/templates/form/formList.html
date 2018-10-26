@@ -1,25 +1,73 @@
 <div>
 	<div class="col-xs-12">
-		<div class="form-group" style="line-height:30px;">
-			<label class="col-sm-1 control-label no-padding-right">表单名称：</label>
-			<div class="col-xs-12 col-sm-3">
-				<span class="block input-icon input-icon-right"> 
-				<input type="text" id="formName" class="width-80" style="height:34px;">
-			</div>
-			<div>
-				<button id="searchBtn" class="btn btn-white btn-info" style="width:80px;margin-right:6px;">
-					<i class="ace-icon fa fa-floppy-o bigger-120 blue" style="margin-right:5px;"></i>搜索
-				</button>
-				<button id="resetBtn" class="btn btn-white btn-warning btn-bold" style="width:80px;margin-right:6px;">
-					<i class="ace-icon fa fa-trash-o bigger-120 orange" style="margin-right:5px;"></i>重置
-				</button>
-				<button id="addBtn" class="btn btn-white btn-success btn-bold" style="width:80px;">
-					<i class="icon-plus-sign bigger-120 orange" style="margin-right:5px;"></i>添加
-				</button>
- 			</div>
-			<div style="clear:both;"></div>
+		<div class="form-group">
+			<table style="width:98%;">
+				<td width="100" style="text-align:right;">
+					<label style="display:inline;">表单名称：</label>
+				</td>
+				<td width="180">
+					<input type="text" id="formName" class="width-130" style="height:34px;display:inline;">
+				</td>
+				<td width="*">
+					<div style="width:100%;text-align:rigth;">
+						<button id="searchBtn" class="btn btn-white btn-info" style="width:80px;margin-right:6px;">
+							<i class="ace-icon fa fa-floppy-o bigger-120 blue" style="margin-right:5px;"></i>搜索
+						</button>
+						<button id="resetBtn" class="btn btn-white btn-warning btn-bold" style="width:80px;margin-right:6px;">
+							<i class="ace-icon fa fa-trash-o bigger-120 orange" style="margin-right:5px;"></i>重置
+						</button>
+					</div>
+				</td>
+				<td width="*">
+					<div class="pull-right tableTools-container">
+						<div class="dt-buttons btn-overlap btn-group">
+							<a id="formAdd" class="dt-button buttons-collection buttons-colvis btn btn-white btn-primary btn-bold"
+								tabindex="0" aria-controls="dynamic-table" data-original-title="" title="添加">
+								<span>
+									<i class="fa icon-plus-sign bigger-110 blue"></i>
+									<span class="hidden">Show/hide columns</span>
+								</span>
+							</a>
+							<a class="dt-button buttons-copy buttons-html5 btn btn-white btn-primary btn-bold"
+								tabindex="0" aria-controls="dynamic-table" data-original-title="" title="">
+								<span>
+									<i class="fa fa-copy bigger-110 pink"></i>
+									<span class="hidden">Copy to clipboard</span>
+								</span>
+							</a>
+							<a class="dt-button buttons-csv buttons-html5 btn btn-white btn-primary btn-bold"
+								tabindex="0" aria-controls="dynamic-table" data-original-title="" title="">
+								<span>
+									<i class="fa fa-database bigger-110 orange"></i> <span
+									class="hidden">Export to CSV</span>
+								</span>
+							</a>
+							<a class="dt-button buttons-excel buttons-flash btn btn-white btn-primary btn-bold"
+								tabindex="0" aria-controls="dynamic-table">
+								<span>
+									<i class="fa fa-file-excel-o bigger-110 green"></i> 
+									<span class="hidden">Export to Excel</span>
+								</span>
+							</a>
+							<a class="dt-button buttons-pdf buttons-flash btn btn-white btn-primary btn-bold"
+								tabindex="0" aria-controls="dynamic-table">
+								<span>
+									<i class="fa fa-file-pdf-o bigger-110 red"></i> 
+									<span class="hidden">Exportto PDF</span>
+								</span>
+							</a>
+							<a class="dt-button buttons-print btn btn-white btn-primary btn-bold" tabindex="0" aria-controls="dynamic-table" data-original-title="" title="">
+								<span>
+									<i class="fa fa-print bigger-110 grey"></i>
+									<span class="hidden">Print</span>
+								</span>
+							</a>
+						</div>
+					</div>
+				</td>
+			</table>
 		</div>
-		<table id="simple-table" class="table table-bordered table-hover" 
+		<table id="simple-table_form" class="table table-bordered table-hover" 
 			service="/form/list" condition="formName" hiddenfield="" pagable="true"
 			pageId="grid-pager" currentPage="1" pageSize="6" model="detail"
 			onTableDataBind="" onRowClick="">
@@ -30,13 +78,14 @@
 							<input type="radio" class="ace"><span class="lbl"></span>
 						</label>
 					</th>
-					<th field="menuName" class="detail-col">表单中文名</th>
-					<th field="menuIcon">表单英文名</th>
-					<th field="menuUrl">描述</th>
+					<th field="tableCname" class="detail-col">表单中文名</th>
+					<th field="tableEname">表单英文名</th>
+					<th field="description">描述</th>
 					<th field="createTime">
 						<i class="ace-icon fa fa-clock-o bigger-110 hidden-480" style="margin-right: 5px;"></i>创建时间
 					</th>
-					<th field="isUse" onViewBind="setStatus">状态</th>
+					<th field="type" onViewBind="setType">表单类型</th>
+					<th field="status" onViewBind="setStatus">状态</th>
 					<th operation width="120" class="center">
 						操作
 						<div operation style="display:none;">
@@ -59,7 +108,7 @@
 <script>
 
 	$(function() {
-		$("#simple-table").table();
+		$("#simple-table_form").table();
 		
 		$("#searchBtn").click(function(){
 			$("#simple-table").table();
@@ -70,20 +119,20 @@
 			$("#simple-table").table();
 		});
 		
-		$("#addBtn").click(function(){
+		$("#formAdd").click(function(){
 			layer.open({
 				type : 1,
-				title : '<h5 class="widget-title lighter"><i class="ace-icon glyphicon glyphicon-book"></i>添加菜单</h5>',
+				title : '<h5 class="widget-title lighter"><i class="fa fa-pencil-square-o glyphicon glyphicon-book"></i><font style="margin-left:5px;">表单添加</font></h5>',
 				shadeClose : false,
 				btn: ["确定","取消"],
-				area : [ '700px', '415px' ],
+				area : [ '700px', '300px' ],
 				content : "",
 				success: function(layero,index){
-					$(layero).find(".layui-layer-content").ajax("/menu/edit/-1");
+					$(layero).find(".layui-layer-content").ajax("/form/edit/-1");
 				},
 				yes: function(index, layero){
 					if($("#menuform").validate()){
-						var post = new Post("/menu/updates/-1");
+						var post = new Post("/form/edit/-1");
 						post.setRangeParam("#menuform");
 						post.doPost();
 						if(post.getCode() >= 0){
@@ -110,7 +159,7 @@
 			area : [ '700px', '415px' ],
 			content : "",
 			success: function(layero,index){
-				$(layero).find(".layui-layer-content").ajax("/menu/edit/"+id);
+				$(layero).find(".layui-layer-content").ajax("/form/edit/"+id);
 			},
 			yes: function(index, layero){
 				if($("#menuform").validate()){
@@ -151,4 +200,11 @@
 			return "<font style='color:red'>禁用</font>";
 		}
 	}
+	
+	function setType(type) {
+		if(type == 1){
+			return "基本表单";
+		}
+	}
+	
 </script>

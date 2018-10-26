@@ -1,0 +1,59 @@
+<div class="col-sm-12">
+	<div class="widget-box">
+		<div class="widget-body" style="border: 1px solid #CCC;">
+			<div class="widget-main">
+				<form id="menuform" class="form-search">
+					<table style="width: 100%;">
+						<tr>
+							<td style="width: 15%; text-align: right;"><font color="red">*</font>表单中文名：</td>
+							<td colspan="3">
+								<input class="form-control input-mask-phone" type="text" name="tableCname" notnull="true" desc="菜单名称" th:value="${formInfo.tableCname} ? ${formInfo.tableCname} : ''">
+							</td>
+						</tr>
+						<tr>
+							<td colspan="4"><div class="hr"></div></td>
+						</tr>
+						<tr>
+							<td style="width: 15%; text-align: right;"><font color="red">*</font>表单英文名：</td>
+							<td colspan="3">
+								<input class="form-control input-mask-phone" type="text" name="tableEname" notnull="true" desc="菜单名称" disable th:value="${formInfo.tableEname} ? ${formInfo.tableEname} : ''">
+							</td>
+						</tr>
+						<tr>
+							<td colspan="4"><div class="hr"></div></td>
+						</tr>
+						<tr>
+							<td style="width: 15%; text-align: right;">表单类型：</td>
+							<td>
+								<select class="form-control input-mask-phone" id="type" th:value="${formInfo.type}?${formInfo.type}:''">
+									<option value="0">基本表单</option>
+									<option value="1">电子证照表单</option>
+								</select>
+							</td>
+							<td style="width: 15%; text-align: right;">状态：</td>
+							<td style="width: 35%;">
+								<div>
+									<label> <input name="status" type="radio" th:field="*{formInfo.status}"
+										class="ace" value="1" selected> <span class="lbl"
+										style="margin-left: 5px;">启用</span> <label
+										style="margin-left: 15px;"> <input th:field="*{formInfo.status}"
+											name="status" type="radio" class="ace" value="0"> <span
+											class="lbl" style="margin-left: 5px;">禁用</span>
+									</label>
+								</div>
+							</td>
+						</tr>
+					</table>
+					<input type="hidden" name="id" th:value="${formInfo.id}?${formInfo.id}:'-1'">
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	$(function(){
+		
+		console.dir(pinyin.getCamelChars("哈哈十点多"));
+		
+	});
+</script>

@@ -16,9 +16,14 @@ public class FormServiceImpl implements FormService {
 	private FormMapper formMapper;
 
 	@Override
-	public Page<Form> getFormList(String formName,int currentPage,int pageSize) {
-		PageHelper.startPage(currentPage,pageSize);
+	public Page<Form> getFormList(String formName, int currentPage, int pageSize) {
+		PageHelper.startPage(currentPage, pageSize);
 		return formMapper.getFormList(formName);
+	}
+
+	@Override
+	public Form getFormInfo(Integer id) {
+		return formMapper.selectByPrimaryKey(id);
 	}
 
 }
